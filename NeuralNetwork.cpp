@@ -63,25 +63,12 @@ void NNlayer::addNeurals(unsigned numNeural, unsigned prevNumNeural)
         for (unsigned k = 0; k < prevNumNeural; k++) { 
             NNconnection connection; 
             connection.weightIdx = i*prevNumNeural + k; // 设置权重索引 
-            connection.neuralIdx = k;    					 // 设置前层结点索引 
+            connection.neuralIdx = k;    				// 设置前层结点索引 
             neural.m_connection.push_back(connection); 
         } 
         m_neurals.push_back(neural); 
     }
-	m_neurals.push_back(NNNeuron(1.0f));					 // bias 
-}
-
-///////////////////////////////////////////////////////////////////////
-//  NNNeuron
-///////////////////////////////////////////////////////////////////////
-void NNNeuron::AddConnection(unsigned iNeuron, unsigned iWeight)
-{
-	m_Connections.push_back(NNConnection(iNeuron, iWeight));
-}
-
-void NNNeuron::AddConnection(const NNConnection& conn)
-{
-	m_Connections.push_back(conn);
+	m_neurals.push_back(NNNeuron(1.0f));				// bias 
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -107,10 +94,8 @@ void NeuralNetwork::forwardCalc_NN(const double const* inputVector, const unsign
 	// load up output vector with results
 	if (outputVector) {
 		layer_It = m_Layers.end() - 1;
-		auto neuron_It = (*layer_It)->m_Neurons.begin();
-		for (int i = 0; i < oCount; ++i) {
+		for (int i = 0, auto neuron_It = (*layer_It)->m_Neurons.begin(); i < oCount; i++, neuron_It++) {
 			outputVector[i] = (*neuron_It)->output;
-			neuron_It++;
 		}
 	}
 }

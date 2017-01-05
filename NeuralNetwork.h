@@ -65,10 +65,7 @@ class NNNeuron
 public:
 	NNNeuron() : output(0.0f) {};
 	~NNNeuron() {};
-
-	void AddConnection(unsigned iNeuron, unsigned iWeight);
-	void AddConnection(NNConnection const & conn);
-
+	
 	double output;
 	vector<NNConnection> m_Connections;
 };
