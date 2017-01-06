@@ -17,22 +17,22 @@ class NNConnection;
 class NeuralNetwork  
 {
 public:
-	NeuralNetwork(const double& eta, const unsigned inIterNum) : nLayer(0), m_etaLearningRate(eta), iterNum(inIterNum) {};
+	NeuralNetwork(const double& eta) : nLayer(0), m_etaLearningRate(eta) {};
 	~NeuralNetwork();
 	void reset();
-	void create(const unsigned numLayers, const unsigned* const ar_nodes);	// 创建网络 
+	void create(const unsigned numLayers, const unsigned* const ar_nodes);	// 创建网络
+	double getMSE(const double* const actualOutput, const double* const targetOutput, const unsigned count);
 
 	void forwardCalc_NN(const double* const inputVector, const unsigned count, 
-						double* outputVector = nullptr, const unsigned oCount = 0);
-	void BackPropagate_NN(double* actualOutput, double* desiredOutput, unsigned count);
+						double* const outputVector = nullptr, const unsigned oCount = 0);
+	void BackPropagate_NN(const double* const actualOutput, const double* const desiredOutput, const unsigned count);
 
 	vector<NNLayer*> m_Layers;	
 private: 
     unsigned nLayer; 			// 网络层数 
     vector<unsigned> nodes; 	// 每层的结点数 
     vector<double> actualOutput;// 每次迭代的输出结果 
-    double m_etaLearningRate; 	// 权值学习率 
-    unsigned iterNum; 			// 迭代次数
+    double m_etaLearningRate; 	// 权值学习率
 };
 
 class NNLayer

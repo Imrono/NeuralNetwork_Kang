@@ -46,6 +46,14 @@ void NeuralNetwork::create(const unsigned numLayers, const unsigned* const ar_no
     }
 }
 
+double NeuralNetwork::getMSE(const double* const actualOutput, const double* const desiredOutput, const unsigned count) 
+{
+	double dMSE = 0.0f;
+	for (unsigned i = 0; i < count; ++i)
+		dMSE += (actualOutput[i]-desiredOutput[i]) * (actualOutput[i]-desiredOutput[i]);
+	dMSE /= 2.0f;
+	return dMSE;
+}
 ///////////////////////////////////////////////////////////////////////
 //  NNLayer class definition
 ///////////////////////////////////////////////////////////////////////
@@ -56,20 +64,20 @@ void NNLayer::addNeurals(unsigned numNeural, unsigned prevNumNeural)
         neuron.output = 0; 
         for (unsigned k = 0; k < prevNumNeural; k++) { 
             NNConnection connection; 
-            connection.WeightIndex = i*prevNumNeural + k; // 设置权重索引 
-            connection.NeuronIndex = k;    				// 设置前层结点索引 
+            connection.WeightIndex = i*prevNumNeural + k;	// 设置权重索引 
+            connection.NeuronIndex = k;    					// 设置前层结点索引 
             neuron.m_Connections.push_back(connection); 
         } 
         m_Neurons.push_back(neuron); 
     }
-	m_Neurons.push_back(NNNeuron(1.0f));				// bias 
+	m_Neurons.push_back(NNNeuron(1.0f));					// bias 
 }
 
 ///////////////////////////////////////////////////////////////////////
 //  forwardCalc
 ///////////////////////////////////////////////////////////////////////
 void NeuralNetwork::forwardCalc_NN(const double* const inputVector, const unsigned iCount, 
-								   double* outputVector /* =NULL */, const unsigned oCount /* =0 */)
+								   double* const outputVector /* =NULL */, const unsigned oCount /* =0 */)
 {
 	auto layer_It = m_Layers.begin();
 	// first layer is inputVector
@@ -113,7 +121,7 @@ void NNLayer::forwardCalc_Layer()
 ///////////////////////////////////////////////////////////////////////
 //  BackPropagate
 ///////////////////////////////////////////////////////////////////////
-void NeuralNetwork::BackPropagate_NN(double *actualOutput, double *desiredOutput, unsigned count)
+void NeuralNetwork::BackPropagate_NN(const double* const actualOutput, const double* const desiredOutput, const unsigned count)
 {
 	// backpropagates through the neural net
 	assert((actualOutput) && (desiredOutput) && (count < 256));
@@ -126,11 +134,11 @@ void NeuralNetwork::BackPropagate_NN(double *actualOutput, double *desiredOutput
 	// Xn is the output vector on the n-th layer
 	// Xnm1 is the output vector of the previous layer
 
-	auto layer_It = m_Layers.end() - 1;
-	vector<double> dErr_dXlast((*layer_It)->m_Neurons.size());
+	unsigned numOutput = (*(m_Layers.end()-1))->m_Neurons.size();
+	vector<double> dErr_dXlast(numOutput);
 	// start the process by calculating dErr_dXn for the last layer.
 	// for the standard MSE Err function (i.e., 0.5*sumof( (actual-target)^2 ), this differential is simply
-	for (unsigned i = 0; i < (*layer_It)->m_Neurons.size(); ++i)
+	for (unsigned i = 0; i < numOutput; ++i)
 		dErr_dXlast[i] = actualOutput[i] - desiredOutput[i];
 	
 	vector<vector<double>> differentials;
@@ -146,7 +154,7 @@ void NeuralNetwork::BackPropagate_NN(double *actualOutput, double *desiredOutput
 	// them to backpropagate error and adjust their weights, and to return the differential
 	// dErr_dXnm1 for use as the input value of dErr_dXn for the next iterated layer
 	unsigned i = iSize - 1;
-	for (; layer_It > m_Layers.begin(); layer_It--) {
+	for (auto layer_It = m_Layers.end() - 1; layer_It > m_Layers.begin(); layer_It--) {
 		(*layer_It)->BackPropagate_Layer(differentials[i], differentials[i-1], m_etaLearningRate);
 		i--;
 	}
