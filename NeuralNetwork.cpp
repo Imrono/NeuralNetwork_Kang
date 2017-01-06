@@ -46,14 +46,6 @@ void NeuralNetwork::create(const unsigned numLayers, const unsigned* const ar_no
     }
 }
 
-double NeuralNetwork::getMSE(const double* const actualOutput, const double* const desiredOutput, const unsigned count) 
-{
-	double dMSE = 0.0f;
-	for (unsigned i = 0; i < count; ++i)
-		dMSE += (actualOutput[i]-desiredOutput[i]) * (actualOutput[i]-desiredOutput[i]);
-	dMSE /= 2.0f;
-	return dMSE;
-}
 ///////////////////////////////////////////////////////////////////////
 //  NNLayer class definition
 ///////////////////////////////////////////////////////////////////////

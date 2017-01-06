@@ -21,7 +21,6 @@ public:
 	~NeuralNetwork();
 	void reset();
 	void create(const unsigned numLayers, const unsigned* const ar_nodes);	// 创建网络
-	double getMSE(const double* const actualOutput, const double* const targetOutput, const unsigned count);
 
 	void forwardCalc_NN(const double* const inputVector, const unsigned count, 
 						double* const outputVector = nullptr, const unsigned oCount = 0);
