@@ -17,7 +17,7 @@ class NNConnection;
 class NeuralNetwork  
 {
 public:
-	NeuralNetwork() : nLayer(0), m_etaLearningRate(0.0f), iterNum(0) {};
+	NeuralNetwork(const double& eta, const unsigned inIterNum) : nLayer(0), m_etaLearningRate(eta), iterNum(inIterNum) {};
 	~NeuralNetwork();
 	void reset();
 	void create(const unsigned numLayers, const unsigned* const ar_nodes);	// 创建网络 
