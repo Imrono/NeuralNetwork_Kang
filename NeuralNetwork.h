@@ -1,4 +1,4 @@
-#if !defined _NEURALNETWORK_H_
+#ifndef _NEURALNETWORK_H_
 #define _NEURALNETWORK_H_
 
 #include <cmath>
@@ -17,13 +17,13 @@ class NNConnection;
 class NeuralNetwork  
 {
 public:
-	NeuralNetwork() : nLayer(0), etaLearningRate(0.0f), iterNum(0) {};
+	NeuralNetwork() : nLayer(0), m_etaLearningRate(0.0f), iterNum(0) {};
 	~NeuralNetwork();
-	void create(unsigned numLayers, unsigned* ar_nodes);	// 创建网络 
-	void initializeNetwork();  								// 初始化网络，包括设置权值等 
+	void reset();
+	void create(const unsigned numLayers, const unsigned* const ar_nodes);	// 创建网络 
 
-	void forwardCalc_NN(const double const* inputVector, const unsigned count, 
-						const double* outputVector = nullptr, const unsigned oCount = 0);
+	void forwardCalc_NN(const double* const inputVector, const unsigned count, 
+						double* outputVector = nullptr, const unsigned oCount = 0);
 	void BackPropagate_NN(double* actualOutput, double* desiredOutput, unsigned count);
 
 	vector<NNLayer*> m_Layers;	
@@ -31,22 +31,22 @@ private:
     unsigned nLayer; 			// 网络层数 
     vector<unsigned> nodes; 	// 每层的结点数 
     vector<double> actualOutput;// 每次迭代的输出结果 
-    double etaLearningRate; 	// 权值学习率 
+    double m_etaLearningRate; 	// 权值学习率 
     unsigned iterNum; 			// 迭代次数
 };
 
 class NNLayer
 {
 public:
-	NNLayer(NNLayer* pPrev = nullptr) : m_pPrevLayer(pPrev) {};
-	~NNLayer();
+	NNLayer() : m_pPrevLayer(nullptr) {};
+	~NNLayer() {};
 	
 	void addNeurals(unsigned num, unsigned preNumNeurals);
 	
 	void forwardCalc_Layer();
 	void BackPropagate_Layer(vector<double>& dErr_dXn     /* in */, 
 							 vector<double>& dErr_dXnm1   /* out */, 
-							 double eta);
+							 const double eta);
 
 	vector<NNNeuron> m_Neurons;
 	
@@ -64,6 +64,7 @@ class NNNeuron
 {
 public:
 	NNNeuron() : output(0.0f) {};
+	NNNeuron(const double& biasOutput) : output(biasOutput) {};
 	~NNNeuron() {};
 	
 	double output;
