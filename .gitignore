@@ -2,3 +2,12 @@
 *.s
 *.o
 *.exe
+*.db
+*.opendb
+.vs/
+/Debug
+/Release
+/x64
+NeuralNetwork_Kang/x64
+NeuralNetwork_Kang/Debug
+NeuralNetwork_Kang/Release

@@ -24,7 +24,7 @@ void NeuralNetwork::create(const unsigned numLayers, const unsigned* const ar_no
 {
 	reset();
 	nLayer = numLayers;
-	for (int i = 0; i < numLayers; i++) {
+	for (unsigned i = 0; i < numLayers; i++) {
 		nodes.push_back(ar_nodes[i]);
 	}
 	
@@ -75,7 +75,7 @@ void NeuralNetwork::forwardCalc_NN(const double* const inputVector, const unsign
 	// first layer is inputVector
 	if  (layer_It < m_Layers.end()) {
 		auto neuron_It = (*layer_It)->m_Neurons.begin();
-		int count = 0;
+		unsigned count = 0;
 		assert(iCount == (*layer_It)->m_Neurons.size());  // there should be exactly one neuron per input
 		while((neuron_It < (*layer_It)->m_Neurons.end()) && (count < iCount))
 			(neuron_It++)->output = inputVector[count++];
@@ -168,7 +168,7 @@ void NNLayer::BackPropagate_Layer(vector<double>& dErr_dXn   /* in */,
 
 	vector<double> dErr_dWn(m_Weights.size(), 0.0);	// important to initialize to zero
 // 	double* dErr_dWn = (double*)(alloca( sizeof(double) *  m_Weights.size())); // alloca in stack
-	for (int i = 0; i < m_Weights.size(); ++i)
+	for (unsigned i = 0; i < m_Weights.size(); ++i)
 		dErr_dWn[i] =0.0;
 	
 	// 1. calculate dErr_dYn = F'(Yn) * dErr_Xn
