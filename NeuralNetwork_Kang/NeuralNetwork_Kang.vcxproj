@@ -21,11 +21,13 @@
   <ItemGroup>
     <ClCompile Include="A1_test.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
+    <ClCompile Include="Predict.cpp" />
     <ClCompile Include="TrainNeuralNetwork.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="TrainNeuralNetwork.h" />
+    <ClInclude Include="Predict.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{97192C62-A224-4D92-8191-792489F096A5}</ProjectGuid>

@@ -14,11 +14,17 @@ struct Data
 class TrainNeuralNetwork
 {
 public:
+	TrainNeuralNetwork(double inResidualErr = 0.0f, unsigned inNumIter = 0) : residualErr(inResidualErr), numIter(inNumIter) {}
+	~TrainNeuralNetwork() {}
+
 	void setSamples(const vector<Data>& inData) { samples = inData;}
+	void setNumIter(const unsigned inNumIter) { numIter = inNumIter;}
+	void setResidualErr(const double inResidualErr) { residualErr = inResidualErr;}
+
 	double getMSE(const vector<double>& actualOutput, const vector<double>& targetOutput);
 	double getMSE_AVG();
 	
-	void Train(); 
+	void Train(NeuralNetwork& NN, const vector<Data>* const inData = nullptr);
 	
 	
 private:

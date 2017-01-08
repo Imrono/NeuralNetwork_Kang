@@ -24,12 +24,18 @@
     <ClCompile Include="TrainNeuralNetwork.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Predict.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeuralNetwork.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="TrainNeuralNetwork.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Predict.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
