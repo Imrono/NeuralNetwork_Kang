@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "NeuralNetwork.h"
-#include <cstdlib>
+#include <cstdio>
 #include <assert.h>
 
 ///////////////////////////////////////////////////////////////////////
@@ -18,53 +18,104 @@ void NeuralNetwork::reset()
 	for(auto layer_It = m_Layers.begin(); layer_It < m_Layers.end(); layer_It++)
 		delete *layer_It;
 	m_Layers.clear();
+	m_nodes.clear();
 }
 
+///////////////////////////////////////////////////////////////////////
+//  INITIAL NN
+///////////////////////////////////////////////////////////////////////
 void NeuralNetwork::create(const vector<size_t>& ar_nodes)
 {
 	reset();
-	nLayer = ar_nodes.size();
-	for (size_t i = 0; i < nLayer; i++) {
-		nodes.push_back(ar_nodes[i]);
+	m_nLayer = ar_nodes.size();
+	for (size_t i = 0; i < m_nLayer; i++) {
+		m_nodes.push_back(ar_nodes[i]);
 	}
 	
-	for (size_t i = 0; i < nLayer; i++) {
-        NNLayer* pLayer = new NNLayer(); 
+	for (size_t i = 0; i < m_nLayer; i++) {
+		bool isInOut = (i == 0 || i == m_nLayer - 1);
+        NNLayer* pLayer = new NNLayer(i); 
         if (i == 0) {
 			pLayer->m_pPrevLayer = nullptr;
-            pLayer->addNeurals(nodes[i], 0); 
+            pLayer->addNeurals(m_nodes[i], 0, isInOut); 
         } else { 
-            pLayer->m_pPrevLayer = m_Layers[i-1]; 
-            pLayer->addNeurals(nodes[i], nodes[i-1]); 
+            pLayer->m_pPrevLayer = m_Layers[i-1];
+            pLayer->addNeurals(m_nodes[i], m_nodes[i-1], isInOut); 
 			
-			size_t numWeights = nodes[i] * (nodes[i-1]+1); 			// 鏈変竴涓槸bias 
+			size_t numWeights = 0;
+			if (1 == i)
+				numWeights = m_nodes[i] * m_nodes[i-1];
+			else
+				numWeights = m_nodes[i] * (m_nodes[i-1]+1); // 有一个是bias 
+			
             for (size_t k = 0; k < numWeights; k++) {
-                pLayer->m_Weights.push_back(0.05*rand()/RAND_MAX); 	// 鍒濆鍖栨潈閲嶅湪0~0.05 
+                pLayer->m_Weights.push_back(WEIGTH_INIT);
             } 
         } 
         m_Layers.push_back(pLayer); 
     }
+	neuronLayerToString();
 }
 
-///////////////////////////////////////////////////////////////////////
-//  NNLayer class definition
-///////////////////////////////////////////////////////////////////////
-void NNLayer::addNeurals(size_t numNeural, size_t prevNumNeural)
+void NNLayer::addNeurals(size_t numNeural, size_t prevNumNeural, bool isInOut)
 { 
     for (unsigned i = 0; i < numNeural; i++) { 
         NNNeuron neuron; 
         neuron.output = 0; 
         for (unsigned k = 0; k < prevNumNeural; k++) { 
             NNConnection connection; 
-            connection.WeightIndex = i*prevNumNeural + k;	// 璁剧疆鏉冮噸绱㈠紩 
-            connection.NeuronIndex = k;    					// 璁剧疆鍓嶅眰缁撶偣绱㈠紩 
+            connection.WeightIndex = i*prevNumNeural + k;	// 设置权重索引 
+            connection.NeuronIndex = k;    					// 设置前层结点索引 
             neuron.m_Connections.push_back(connection); 
-        } 
-        m_Neurons.push_back(neuron); 
+        }
+		m_Neurons.push_back(neuron); 
     }
-	m_Neurons.push_back(NNNeuron(1.0f));					// bias 
+	if (!isInOut)
+		m_Neurons.push_back(NNNeuron(1.0f));					// bias 
 }
 
+void NeuralNetwork::neuronLayerToString()
+{
+	for (size_t i = 0; i < m_nLayer; i++) {
+		printf("Layer %3d in NN, with Neurons%3d (input:%3d)\n", i, m_Layers[i]->m_Neurons.size(), m_nodes[i]);
+		m_Layers[i]->neuronToString();
+	}
+}
+
+void NNLayer::neuronToString()
+{
+	size_t nNeuron = m_Neurons.size();
+	for (size_t i = 0; i < nNeuron; i++) {
+		//printf("\t\n");
+	}
+}
+
+void NeuralNetwork::weightToString()
+{
+	printf("NeuralNetwork weights\n");
+	for (size_t i = 0; i < m_nLayer; i++) {
+		m_Layers[i]->weightToString();
+	}
+}
+
+void NNLayer::weightToString()
+{
+	size_t weightSize = m_Weights.size();
+	size_t prev_i = 0;
+	size_t curr_i = 0;
+	printf("Layer %3d, weightSize:%3d | ", layerId, weightSize);
+	for(size_t wi = 0; wi < weightSize; wi++) {
+		size_t prev_num = 0;
+		if (m_pPrevLayer)
+			prev_num = m_pPrevLayer->m_Neurons.size();
+		else
+			prev_num = 0;
+		printf("W%d%d:%f ", curr_i, prev_i, m_Weights[wi]);
+		prev_i = (++prev_i) % prev_num;
+		curr_i = (++curr_i) / prev_num;
+	}
+	printf("\n");
+}
 ///////////////////////////////////////////////////////////////////////
 //  forwardCalc
 ///////////////////////////////////////////////////////////////////////
@@ -79,13 +130,17 @@ void NeuralNetwork::forwardCalc_NN(const vector<double>& inputVector, vector<dou
 		assert(xSize == (*layer_It)->m_Neurons.size());  // there should be exactly one neuron per input
 		while((neuron_It < (*layer_It)->m_Neurons.end()) && (count < xSize))
 			(neuron_It++)->output = inputVector[count++];
+		
 	}
 	layer_It++;
+	
 	// following layers
 	for(; layer_It < m_Layers.end(); layer_It++)
 		(*layer_It)->forwardCalc_Layer();
 	
 	// load up output vector with results
+	outputVector.clear();
+	layer_It = m_Layers.end() - 1;
 	for (auto neuron_It = (*layer_It)->m_Neurons.begin(); neuron_It < (*layer_It)->m_Neurons.end(); neuron_It++)
 		outputVector.push_back(neuron_It->output);
 }

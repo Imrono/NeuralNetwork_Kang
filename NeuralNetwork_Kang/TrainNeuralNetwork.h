@@ -17,21 +17,23 @@ public:
 	TrainNeuralNetwork(double inResidualErr = 0.0f, unsigned inNumIter = 0) : residualErr(inResidualErr), numIter(inNumIter) {}
 	~TrainNeuralNetwork() {}
 
-	void setSamples(const vector<Data>& inData) { samples = inData;}
+	void setSamples(const vector<Data>& inData) { samples = inData; samplesToString();}
 	void setNumIter(const unsigned inNumIter) { numIter = inNumIter;}
 	void setResidualErr(const double inResidualErr) { residualErr = inResidualErr;}
 
 	double getMSE(const vector<double>& actualOutput, const vector<double>& targetOutput);
 	double getMSE_AVG();
 	
-	void Train(NeuralNetwork& NN, const vector<Data>* const inData = nullptr);
+	void Train(NeuralNetwork& NN);
 	
 	
 private:
 	double residualErr;
 	unsigned numIter;
 	vector<Data> samples;
-	vector<vector<double>> actualOutput;
+	vector<vector<double>> m_actualOutput;
+	
+	void samplesToString();
 };
 
 #endif
