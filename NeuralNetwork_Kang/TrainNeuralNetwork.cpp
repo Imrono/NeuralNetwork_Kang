@@ -17,10 +17,28 @@ double TrainNeuralNetwork::getMSE_AVG()
 	size_t numSample = samples.size();
 	double dMSE = 0.0f;
 	for (unsigned i = 0; i < numSample; i++) {
-		dMSE += getMSE(m_actualOutput[i], samples[i].y);
+		double tmpMSE = getMSE(m_actualOutput[i], samples[i].y);
+		dMSE += tmpMSE;
+		//printf("Sample:%d,tmpMSE:%f actOut:", i, tmpMSE);
+		//for (size_t j = 0; j < m_actualOutput[i].size(); j++) {
+		//	printf("%f ", m_actualOutput[i][j]);
+		//}
+		//printf("Out:");
+		//or (size_t j = 0; j < samples[i].y.size(); j++) {
+		//	printf("%f ", samples[i].y[j]);
+		//}
+		//printf("\n");
 	}
+	//printf("\n");
 	dMSE /= numSample;
 	return dMSE;
+}
+
+void TrainNeuralNetwork::setSamples(const vector<Data>& inData) 
+{ 
+	samples = inData; 
+	m_actualOutput.reserve(samples.size()); 
+	samplesToString();
 }
 
 void TrainNeuralNetwork::Train(NeuralNetwork& NN)
@@ -34,19 +52,20 @@ void TrainNeuralNetwork::Train(NeuralNetwork& NN)
 
 	unsigned count = 0;
 	double tmpMSE = 0.0f;
+	double tmpLastMSE = 0.0f;
 	double *tmpActualOutput = new double[ySize];
 	do {
+		tmpLastMSE = tmpMSE;
 		if (m_actualOutput.size() > 0)
-			m_actualOutput[count].clear();
+			m_actualOutput.clear();
 		for (int sampleIdx = 0; sampleIdx < sampleSize; sampleIdx++) {
 			vector<double> tmpY;
 			NN.forwardCalc_NN(samples[sampleIdx].x, tmpY);
 			NN.BackPropagate_NN(&(tmpY[0]), &(samples[sampleIdx].y[0]), ySize);
-
 			m_actualOutput.push_back(tmpY);
 		}
 		tmpMSE = getMSE_AVG();
-		printf("== ITERATION %4d(%4d): with MSE %.6f (%.6f) ==\n", count, numIter, tmpMSE, residualErr);
+		printf("== ITERATION %4d(%4d): with MSE %.6f (%.6f) dMSE:%.6f outputSize:%d==\n", count, numIter, tmpMSE, residualErr, tmpLastMSE-tmpMSE, m_actualOutput.size());
 		count++;
 	} while (tmpMSE > residualErr && count < numIter);
 	delete tmpActualOutput;

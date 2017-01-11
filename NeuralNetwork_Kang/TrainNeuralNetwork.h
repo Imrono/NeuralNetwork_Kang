@@ -17,7 +17,7 @@ public:
 	TrainNeuralNetwork(double inResidualErr = 0.0f, unsigned inNumIter = 0) : residualErr(inResidualErr), numIter(inNumIter) {}
 	~TrainNeuralNetwork() {}
 
-	void setSamples(const vector<Data>& inData) { samples = inData; samplesToString();}
+	void setSamples(const vector<Data>& inData);
 	void setNumIter(const unsigned inNumIter) { numIter = inNumIter;}
 	void setResidualErr(const double inResidualErr) { residualErr = inResidualErr;}
 

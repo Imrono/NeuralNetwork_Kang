@@ -34,10 +34,10 @@ public:
 	
 	vector<NNLayer*> m_Layers;	
 private: 
-	size_t m_nLayer; 			// 网络层数 
-    vector<size_t> m_nodes; 	// 每层的结点数 
-    vector<double> actualOutput;// 每次迭代的输出结果 
-    double m_etaLearningRate; 	// 权值学习率
+	size_t m_nLayer; 				// 网络层数 
+    vector<size_t> m_nodes; 		// 每层的结点数 
+    vector<double> m_actualOutput;	// 每次迭代的输出结果 
+    double m_etaLearningRate; 		// 权值学习率
 };
 
 class NNLayer

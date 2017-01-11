@@ -110,7 +110,7 @@ void NNLayer::weightToString()
 			prev_num = m_pPrevLayer->m_Neurons.size();
 		else
 			prev_num = 0;
-		printf("W%d%d:%f ", curr_i, prev_i, m_Weights[wi]);
+		//printf("W%d%d:%f ", curr_i, prev_i, m_Weights[wi]);
 		prev_i = (++prev_i) % prev_num;
 		curr_i = (++curr_i) / prev_num;
 	}
