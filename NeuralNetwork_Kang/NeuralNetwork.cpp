@@ -149,13 +149,14 @@ void NNLayer::forwardCalc_Layer()
 {
 	assert(m_pPrevLayer);
 	for(auto neuron_It = m_Neurons.begin(); neuron_It < m_Neurons.end(); neuron_It++) {
-		double dSum = 0.0f;
+		double sum = 0.0f;
 		for (auto conn_It = neuron_It->m_Connections.begin(); conn_It < neuron_It->m_Connections.end(); conn_It++) {
 			assert(conn_It->WeightIndex < m_Weights.size());
 			assert(conn_It->NeuronIndex < m_pPrevLayer->m_Neurons.size());
-			dSum += m_Weights[conn_It->WeightIndex] * m_pPrevLayer->m_Neurons[conn_It->NeuronIndex].output;
+			sum += m_Weights[conn_It->WeightIndex] * m_pPrevLayer->m_Neurons[conn_It->NeuronIndex].output;
 		}
-		neuron_It->output = SIGMOID(dSum);
+		neuron_It->z = sum;
+		neuron_It->output = SIGMOID(sum);
 	}
 }
 
@@ -221,7 +222,8 @@ void NNLayer::BackPropagate_Layer(vector<double>& dErr_dXn   /* in */,
 	for (size_t i = 0; i < neuronSize; ++i) {
 		assert(i < dErr_dYn.size());
 		assert(i < dErr_dXn.size());
-		dErr_dYn[i] = DSIGMOID(m_Neurons[i].output) * dErr_dXn[i];
+		//dErr_dYn[i] = DSIGMOID(m_Neurons[i].output) * dErr_dXn[i];
+		dErr_dYn[i] = DSIGMOID(m_Neurons[i].z) * dErr_dXn[i];
 	}
 	
 	// 2. calculate dErr_Wn = Xnm1 * dErr_Yn

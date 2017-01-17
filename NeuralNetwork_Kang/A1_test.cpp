@@ -18,7 +18,7 @@ int main()
 {
 	// Create NN
 	printf("### CREATE NN BEGINING\n");
-	size_t neuralLayer[] = {3, 18, 18, 3};
+	size_t neuralLayer[] = {3, 8, 8, 8, 3};
 	size_t nLayer = sizeof(neuralLayer)/sizeof(neuralLayer[0]);
 	printf("input neuralLayer: ");
 	for (size_t i = 0; i < nLayer; i++) {
@@ -58,7 +58,7 @@ int main()
 	trainSet.push_back(trainData);
 	trainData.x.clear(); trainData.y.clear();
 
-	TrainNeuralNetwork trainNN(0.00001f, 5000u);
+	TrainNeuralNetwork trainNN(0.0001f, 10000u);
 	trainNN.setSamples(trainSet);
 	printf("### TRAIN NN FISISHED\n");
 	trainNN.Train(NN);

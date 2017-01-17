@@ -77,6 +77,7 @@ public:
 	NNNeuron(const double& biasOutput) : output(biasOutput) {};
 	~NNNeuron() {};
 	
+	double z;
 	double output;
 	vector<NNConnection> m_Connections;
 };
