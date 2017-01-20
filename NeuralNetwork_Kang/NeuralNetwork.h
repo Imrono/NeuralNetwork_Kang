@@ -32,6 +32,8 @@ public:
 
 	void forwardCalc_NN(const vector<double>& inputVector, vector<double>& outputVector);
 	void BackPropagate_NN(const double* const actualOutput, const double* const desiredOutput, size_t count);
+	
+	void forget_NN(double minRate);
 
 	void weightToString();
 	void neuronLayerToString();
@@ -56,6 +58,9 @@ public:
 	void BackPropagate_Layer(vector<double>& dErr_dXn     /* in */, 
 							 vector<double>& dErr_dXnm1   /* out */, 
 							 const double eta);
+		
+	void forget_Layer(double minRate);
+	static size_t count;
 
 	double activation(double x) {
 		//return SIGMOID(x);

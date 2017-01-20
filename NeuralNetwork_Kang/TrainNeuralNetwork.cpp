@@ -65,14 +65,14 @@ void TrainNeuralNetwork::Train(NeuralNetwork& NN)
 			m_actualOutput.push_back(tmpY);
 		}
 		tmpMSE = getMSE_AVG();
-		if (!(count%250))
-			printf("== ITERATION %4d(%4d): with MSE %.6f (%.6f) dMSE:%.6f outputSize:%d ==\n", count, numIter, tmpMSE, residualErr, tmpLastMSE-tmpMSE, m_actualOutput.size());
+		if (!(count%500))
+			printf("== ITERATION %4d(%4d): with MSE %.12f (%.12f) dMSE:%.12f outputSize:%d ==\n", count, numIter, tmpMSE, residualErr, tmpLastMSE-tmpMSE, m_actualOutput.size());
 		count++;
 	} while (tmpMSE > residualErr && count < numIter);
-	printf("**** TOTAL ITERATION %4d(%4d): with MSE %.6f (%.6f) outputSize:%d ****\n", count, numIter, tmpMSE, residualErr, m_actualOutput.size());
+	printf("**** TOTAL ITERATION %4d(%4d): with MSE %.12f (%.12f) outputSize:%d ****\n", count, numIter, tmpMSE, residualErr, m_actualOutput.size());
 	delete tmpActualOutput;
 	
-	NN.weightToString();
+	//NN.weightToString();
 }
 
 void TrainNeuralNetwork::samplesToString()

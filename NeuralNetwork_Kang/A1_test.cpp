@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 vector<size_t> transNN(size_t* array, size_t num) {
@@ -69,9 +70,29 @@ int main()
 	trainSet.push_back(trainData);
 	trainData.x.clear(); trainData.y.clear();
 
-	TrainNeuralNetwork trainNN(0.0001f, 100000u);
+	TrainNeuralNetwork trainNN(0.1f, 50000u);
 	trainNN.setSamples(trainSet);
-	printf("### TRAIN NN FISISHED\n");
+	printf("### TRAIN NN STARTED\n");
+	//for (size_t i = 0; i < 1; i++) {
+		//double rEps = 0.01f * pow(0.1f, i%4);
+		//double rEps = 0.0001;
+		//double forgetRate = 0.05f;
+		//printf("###### TOTAL TRAIN NN ITERATION: %d (rEps:%f, forgetRate:%f)######\n", i, rEps, forgetRate);
+		//trainNN.setResidualErr(rEps);
+		//trainNN.Train(NN);
+		//NN.forget_NN(forgetRate);
+		
+		//NN.weightToString();
+	//}
+	//trainNN.setResidualErr(0.0000001);
+	//trainNN.Train(NN);
+	//NN.forget_NN(0.1);
+	
+	//trainNN.setResidualErr(0.000000001);
+	//trainNN.Train(NN);
+	//NN.forget_NN(0.15);
+	
+	trainNN.setResidualErr(0.00000000001);
 	trainNN.Train(NN);
 	printf("### TRAIN NN FISISHED\n");
 
@@ -79,7 +100,7 @@ int main()
 	printf("### NN BEGIN TO DO PREDICTION\n");
 	PredictNN pdtNN;
 	Data actual;
-	actual.x.push_back(1.0f); actual.x.push_back(1.0f); actual.x.push_back(1.0f); 
+	actual.x.push_back(1.0f); actual.x.push_back(200.0f); actual.x.push_back(1.0f); 
 	actual.y.push_back(0.0f); actual.y.push_back(0.0f); actual.y.push_back(0.0f); 
 	pdtNN.myPredict(NN, actual);
 	printf("1->x:%.5f, %.5f, %.5f\ty:%.5f, %.5f, %.5f\n", actual.x[0], actual.x[1], actual.x[2], actual.y[0], actual.y[1], actual.y[2]);

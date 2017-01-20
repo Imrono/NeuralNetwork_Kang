@@ -4,7 +4,7 @@
 #include "NeuralNetwork.h"
 #include <cstdio>
 #include <assert.h>
-
+#include <cmath>
 ///////////////////////////////////////////////////////////////////////
 //  NeuralNetwork class definition
 ///////////////////////////////////////////////////////////////////////
@@ -100,10 +100,14 @@ void NeuralNetwork::weightToString()
 
 void NNLayer::weightToString()
 {
-	size_t weightSize = m_Weights.size();
+	const size_t neuronSize = m_Neurons.size();
+	const size_t weightSize = m_Weights.size();
+	size_t connSize = 0;
+	for (size_t neuIdx = 0; neuIdx < neuronSize; neuIdx++)
+		connSize += m_Neurons[neuIdx].m_Connections.size();
 	size_t prev_i = 0;
 	size_t curr_i = 0;
-	printf("Layer %3d, weightSize:%3d | ", layerId, weightSize);
+	printf("Layer %3d, |weightSize:%3d | connectionSize:%3d", layerId, weightSize, connSize);
 	for(size_t wi = 0; wi < weightSize; wi++) {
 		size_t prev_num = 0;
 		if (m_pPrevLayer)
@@ -243,5 +247,57 @@ void NNLayer::BackPropagate_Layer(vector<double>& dErr_dXn   /* in */,
 	// 3. update the weights of this layer neuron using dErr_dW and the learning rate eta
 	for (unsigned j = 0; j < weightSize; ++j) {
 		m_Weights[j] -= eta * dErr_dWn[j];
+	}
+}
+
+void NeuralNetwork::forget_NN(double minRate)
+{
+	// forget layers
+	for(auto layer_It = m_Layers.begin(); layer_It < m_Layers.end(); layer_It++) {
+		//printf("forget layer %d\n", (*layer_It)->layerId);
+		(*layer_It)->forget_Layer(minRate);
+	}
+}
+
+size_t NNLayer::count = 0;
+void NNLayer::forget_Layer(double minRate)
+{
+	if (0 == layerId) {
+		printf("layerId == 0, return");
+		return;
+	}
+	const size_t neuronSize = m_Neurons.size();
+	const size_t weightSize = m_Weights.size();
+	assert(m_pPrevLayer);
+	
+	double maxWeight = 0.0f;
+	size_t a,b;
+	for (size_t neuIdx = 0; neuIdx < neuronSize; neuIdx++) {
+		for (auto conn_It = m_Neurons[neuIdx].m_Connections.begin(); conn_It < m_Neurons[neuIdx].m_Connections.end(); conn_It++) {
+			assert(conn_It->NeuronIndex < m_pPrevLayer->m_Neurons.size());
+			assert(conn_It->WeightIndex < weightSize);
+			
+			double absWeight = abs(m_Weights[conn_It->WeightIndex]);
+			maxWeight = maxWeight ? absWeight > maxWeight : absWeight;
+			a = conn_It->NeuronIndex;
+			b = neuIdx;
+		}
+	}
+	printf("LayerId:%2u, maxWeight:%f W_%d_%d\n", layerId, maxWeight, a, b);
+	
+	for (size_t neuIdx = 0; neuIdx < neuronSize; neuIdx++) {
+		for (auto conn_It = m_Neurons[neuIdx].m_Connections.begin(); conn_It < m_Neurons[neuIdx].m_Connections.end(); ) {
+			assert(conn_It->NeuronIndex < m_pPrevLayer->m_Neurons.size());
+			assert(conn_It->WeightIndex < weightSize);
+
+			double absWeight = abs(m_Weights[conn_It->WeightIndex]);
+			if (absWeight < maxWeight * minRate) {
+				count++;
+				printf("LayerId:%2u, forget(%u)[%f] W_%d_%d: %f(%f)\n", layerId, count, absWeight/maxWeight, conn_It->NeuronIndex, neuIdx, absWeight, m_Weights[conn_It->WeightIndex], m_Weights[conn_It->WeightIndex]);
+				m_Neurons[neuIdx].m_Connections.erase(conn_It);
+			}
+			else
+				conn_It++;
+		}
 	}
 }
