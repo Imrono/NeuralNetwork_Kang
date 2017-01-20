@@ -24,6 +24,17 @@ int main()
 	for (size_t i = 0; i < nLayer; i++) {
 		printf("%u ", neuralLayer[i]);
 	}	printf("\n");
+	printf("NN unknowns: ");
+	size_t totalUnknown = 0;
+	for (size_t i = 1; i < nLayer; i++) {
+		size_t tmpUnknown = 0;
+		if (1 == i)
+			tmpUnknown = neuralLayer[i-1]*neuralLayer[i];
+		else
+			tmpUnknown = (neuralLayer[i-1]+1)*neuralLayer[i];	
+		printf("%u ", tmpUnknown);
+		totalUnknown += tmpUnknown;
+	}	printf("total: %u\n", totalUnknown);
 	NeuralNetwork NN(0.05f);
 	vector<size_t> nnNodes = transNN(neuralLayer, nLayer);
 	NN.create(nnNodes);
@@ -58,7 +69,7 @@ int main()
 	trainSet.push_back(trainData);
 	trainData.x.clear(); trainData.y.clear();
 
-	TrainNeuralNetwork trainNN(0.0001f, 10000u);
+	TrainNeuralNetwork trainNN(0.0001f, 100000u);
 	trainNN.setSamples(trainSet);
 	printf("### TRAIN NN FISISHED\n");
 	trainNN.Train(NN);

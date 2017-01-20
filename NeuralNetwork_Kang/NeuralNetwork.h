@@ -10,8 +10,12 @@ using namespace std;
 #define WEIGTH_INIT (0.05*rand()/RAND_MAX) 		// 初始化权重在0~0.05 
 //#define WEIGTH_INIT (0.0f)
 
+// 1
 #define SIGMOID(x) (1.7159*tanh(0.66666667*x))
 #define DSIGMOID(S) (0.66666667/1.7159*(1.7159+(S))*(1.7159-(S)))  // derivative of the sigmoid as a function of the sigmoid's output
+// 2
+#define RELU(x) ((x) > 0.0f ? (x) : (0.1f*x))
+#define DRELU(S) ((S) > 0.0f ? 1.0f : 0.1f)
 
 // forward declarations
 class NNLayer;
@@ -53,6 +57,15 @@ public:
 							 vector<double>& dErr_dXnm1   /* out */, 
 							 const double eta);
 
+	double activation(double x) {
+		//return SIGMOID(x);
+		return RELU(x);
+	}
+	double d_activation(double x) {
+		//return DSIGMOID(x);
+		return DRELU(x);
+	}
+	
 	vector<NNNeuron> m_Neurons;
 	size_t layerId;
 	
